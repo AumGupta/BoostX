@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Non-Scrollable Title Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill"
+        android:layout_marginBottom="24dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp">
+
+        <!-- App Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="monospace"
+            android:text="BoostX"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <!-- Info Icon -->
+        <TextView
+            android:id="@+id/infoIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:fontFamily="monospace"
+            android:padding="4dp"
+            android:text="ⓘ"
+            android:textColor="@color/neon_yellow"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:orientation="vertical">
+
+            <!-- Audio Device Information -->
+            <TextView
+                android:id="@+id/outputDeviceText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="48dp"
+                android:fontFamily="monospace"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="Output Device: Unknown"
+                android:textColor="@color/gray"
+                android:textSize="16sp" />
+
+            <!-- Volume Controls -->
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="42dp"
+                android:gravity="start"
+                android:orientation="vertical">
+
+                <!-- Volume Information -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="start"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="Volume: "
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:id="@+id/volumeLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="100%"
+                        android:textColor="@color/gray"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/volumeSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="Volume level slider"
+                    android:stepSize="1"
+                    android:value="50"
+                    android:valueFrom="0"
+                    android:valueTo="100"
+                    app:haloRadius="0dp"
+                    app:thumbElevation="0dp"
+                    app:thumbHeight="40dp"
+                    app:thumbRadius="40dp"
+                    app:thumbTrackGapSize="12dp"
+                    app:thumbWidth="14dp"
+                    app:tickVisible="false"
+                    app:trackColorActive="@color/neon_yellow"
+                    app:trackHeight="40dp"
+                    app:trackInsideCornerSize="8dp"
+                    app:trackStopIndicatorSize="0dp" />
+            </LinearLayout>
+
+            <!-- Boost Controls -->
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:orientation="vertical">
+
+                <!-- Boost Information with Switch -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="Boost: "
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:id="@+id/boostLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="monospace"
+                        android:text="0%"
+                        android:textColor="@color/gray"
+                        android:textSize="18sp" />
+
+                    <!-- Gradual Boost Switch (Aligned end) -->
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/gradualBoostSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:hapticFeedbackEnabled="true"
+                        android:minHeight="48dp"
+                        android:text="Gradual"
+                        android:textColor="@color/gray"
+                        android:textIsSelectable="false"
+                        android:textSize="16sp"
+                        android:thumbTint="@color/gray"
+                        android:trackTint="@color/gray"
+                        app:thumbTextPadding="4dp" />
+                </LinearLayout>
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/boostSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="Boost level slider"
+                    android:stepSize="10"
+                    android:value="0"
+                    android:valueFrom="0"
+                    android:valueTo="100"
+                    app:haloRadius="0dp"
+                    app:thumbElevation="0dp"
+                    app:thumbHeight="40dp"
+                    app:thumbRadius="40dp"
+                    app:thumbTrackGapSize="12dp"
+                    app:thumbWidth="14dp"
+                    app:tickColorActive="@color/neon_yellow"
+                    app:tickColorInactive="@color/neon_yellow"
+                    app:tickRadiusActive="6dp"
+                    app:tickRadiusInactive="0dp"
+                    app:tickVisible="true"
+                    app:trackColorActive="@color/neon_yellow"
+                    app:trackHeight="6dp"
+                    app:trackInsideCornerSize="2dp"
+                    app:trackStopIndicatorSize="0dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>
