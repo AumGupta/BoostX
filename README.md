@@ -1,8 +1,9 @@
 # BoostX 
-![GitHub License](https://img.shields.io/github/license/AumGupta/BoostX) ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/AumGupta/BoostX/total)
+![GitHub Release](https://img.shields.io/github/v/release/AumGupta/BoostX)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/AumGupta/BoostX/total)
+![Download Now](https://img.shields.io/badge/download-now?link=https%3A%2F%2Fgithub.com%2FAumGupta%2FBoostX%2Freleases%2Fdownload%2Fv1.0.0%2Fapp-release.apk)
 
 
-<!-- logo -->
 <div align="center">
    <img alt="BoostX Logo" src="assets/logo.png">
 </div>
