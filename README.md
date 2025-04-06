@@ -6,7 +6,7 @@
 ![GitHub Release](https://img.shields.io/github/v/release/AumGupta/BoostX)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/AumGupta/BoostX/total)
 
-   <img alt="BoostX Logo" src="assets/logo.png">
+   <img alt="BoostX Logo" src="docs/assets/logo.png">
 
 BoostX is a minimal yet powerful sound enhancement tool that allows users to boost audio levels beyond system limits with sliders for fine adjustments, and real-time audio device insights.
 </div>
@@ -22,10 +22,10 @@ BoostX is a minimal yet powerful sound enhancement tool that allows users to boo
 ## Screenshots
 
 <div align="center">
-   <img src="assets/screenshots/boost.jpg" width="25%" alt="BoostX UI 1">
-   <img src="assets/screenshots/boost-m.jpg" width="25%" alt="BoostX UI 3">
-   <img src="assets/screenshots/boost-gradual.jpg" width="25%" alt="BoostX UI 4">
-   <img src="assets/screenshots/app-info.jpg" width="25%" alt="BoostX UI 2">
+   <img src="docs/assets/screenshots/1.png" width="25%" alt="BoostX UI 1">
+   <img src="docs/assets/screenshots/2.png" width="25%" alt="BoostX UI 2">
+   <img src="docs/assets/screenshots/3.png" width="25%" alt="BoostX UI 3">
+   <img src="docs/assets/screenshots/4.png" width="25%" alt="BoostX UI 4">
 </div>
 
 ## Download
