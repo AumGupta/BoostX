@@ -23,7 +23,6 @@ BoostX is a minimal yet powerful sound enhancement tool that allows users to boo
 
 <div align="center">
    <img src="docs/assets/screenshots/1.png" width="25%" alt="BoostX UI 1">
-   <img src="docs/assets/screenshots/2.png" width="25%" alt="BoostX UI 2">
    <img src="docs/assets/screenshots/3.png" width="25%" alt="BoostX UI 3">
    <img src="docs/assets/screenshots/4.png" width="25%" alt="BoostX UI 4">
 </div>
