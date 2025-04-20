@@ -85,12 +85,15 @@ class MainActivity : AppCompatActivity() {
         audioSessionID = audioManager.generateAudioSessionId()
 
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
-        volumeSlider.value = 100f
+        val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        val currentVolumePercent = currentVolume * 100 / maxVolume
 
         boostTextView = findViewById(R.id.boostLevel)
         volumeTextView = findViewById(R.id.volumeLevel)
         outputDeviceTextView = findViewById(R.id.outputDeviceText)
+
+        volumeSlider.value = currentVolumePercent.toFloat()
+        volumeTextView.text = "$currentVolumePercent%"
 
         boostSlider.addOnChangeListener { _, value, _ -> applyBoost(value.toInt()) }
         volumeSlider.addOnChangeListener { _, value, _ -> applyVolume(value.toInt(), maxVolume) }
