@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">BoostX</string>
+    <string name="output_device_unknown">Outputapparaat: Onbekend</string>
+    <string name="volume_label">Volume: </string>
+    <string name="volume_slider_desc">Schuifregelaar voor volumeniveau</string>
+    <string name="boost_label">Boost: </string>
+    <string name="gradual_label">Geleidelijk</string>
+    <string name="boost_slider_desc">Schuifregelaar voor boostniveau</string>
+
+    <string name="app_info_title">App Info</string>
+    <string name="version_label">Versie:</string>
+    <string name="api_level_label">API Niveau:</string>
+    <string name="developer_label">Ontwikkelaar:</string>
+    <string name="source_label">Bron:</string>
+    <string name="session_id_label">Sessie ID:</string>
+    <string name="package_label">Pakket:</string>
+    <string name="warning_text">Waarschuwing: Overmatige boost kan audio vervormen of luidsprekers beschadigen.</string>
+
+    <string name="no_device_detected">Geen actief outputapparaat gedetecteerd</string>
+    <string name="device_name_label">Apparaatnaam:</string>
+    <string name="device_type_label">Apparaattype:</string>
+    <string name="device_id_label">Apparaat ID:</string>
+    <string name="channels_label">Kanalen:</string>
+    <string name="encodings_label">Coderingen:</string>
+    <string name="sample_rates_label">Samplefrequenties:</string>
+
+    <string name="device_bluetooth">Bluetooth</string>
+    <string name="device_wired_headphones">Bedrade hoofdtelefoon</string>
+    <string name="device_usb_audio">USB Audio</string>
+    <string name="device_hdmi">HDMI Uitgang</string>
+    <string name="device_speaker">Apparaat luidspreker</string>
+    <string name="device_earpiece">Oortje</string>
+    <string name="device_unknown">Onbekend apparaat</string>
+    <string name="format_unknown">Onbekend formaat</string>
+</resources>
