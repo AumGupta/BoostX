@@ -6,6 +6,7 @@
     <string name="boost_label">Boost: </string>
     <string name="gradual_label">Gradual</string>
     <string name="boost_slider_desc">Boost level slider</string>
+    <string name="start_on_boot_label">Start on Boot</string>
 
     <string name="app_info_title">App Info</string>
     <string name="version_label">Version:</string>

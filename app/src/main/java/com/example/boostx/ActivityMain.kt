@@ -4,10 +4,14 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
+import android.provider.Settings
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -31,6 +35,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var boostSlider: Slider
     private lateinit var volumeSlider: Slider
     private lateinit var gradualBoostSwitch: MaterialSwitch
+    private lateinit var bootStartSwitch: MaterialSwitch
+    private lateinit var bootStartText: TextView
     private lateinit var boostTextView: TextView
     private lateinit var volumeTextView: TextView
     private lateinit var outputDeviceTextView: TextView
@@ -55,6 +61,8 @@ class MainActivity : AppCompatActivity() {
         boostSlider = findViewById(R.id.boostSlider)
         volumeSlider = findViewById(R.id.volumeSlider)
         gradualBoostSwitch = findViewById(R.id.gradualBoostSwitch)
+        bootStartSwitch = findViewById(R.id.bootStartSwitch)
+        bootStartText = findViewById(R.id.bootStartText)
 
         val originalBoostSliderProperties = mutableMapOf(
             "valueFrom" to boostSlider.valueFrom,
@@ -72,13 +80,21 @@ class MainActivity : AppCompatActivity() {
             handleGradualBoostSwitch(isChecked, originalBoostSliderProperties)
         }
 
+        bootStartSwitch.setOnCheckedChangeListener { _, isChecked ->
+            handleBootStartSwitch(isChecked)
+        }
+
         val prefs = getSharedPreferences("BoostXPrefs", Context.MODE_PRIVATE)
         val savedBoost = prefs.getFloat("boost_value", 0f)
         val savedVolume = prefs.getFloat("volume_value", 100f)
         val savedGradual = prefs.getBoolean("gradual_boost", false)
+        val savedBootStart = prefs.getBoolean("boot_start", false)
 
         gradualBoostSwitch.isChecked = savedGradual
         handleGradualBoostSwitch(savedGradual, originalBoostSliderProperties)
+
+        bootStartSwitch.isChecked = savedBootStart
+        handleBootStartSwitch(savedBootStart)
 
         volumeSlider.value = savedVolume
 
@@ -103,6 +119,28 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.infoIcon).setOnClickListener {
             showAppInfo()
+        }
+
+        checkBatteryOptimizations()
+    }
+
+    private fun checkBatteryOptimizations() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val intent = Intent()
+            val packageName = packageName
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                MaterialAlertDialogBuilder(this, R.style.CustomDialogTheme)
+                    .setTitle("Battery Optimization")
+                    .setMessage("To ensure the app runs smoothly in the background, please disable battery optimization for BoostX.")
+                    .setPositiveButton("Settings") { _, _ ->
+                        intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                        intent.data = Uri.parse("package:$packageName")
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
         }
     }
 
@@ -211,6 +249,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun handleBootStartSwitch(isChecked: Boolean) {
+        if (isChecked) {
+            bootStartSwitch.thumbTintList = ColorStateList.valueOf("#CCFF00".toColorInt())
+            bootStartSwitch.trackTintList = ColorStateList.valueOf("#666600".toColorInt())
+            bootStartText.setTextColor(Color.WHITE)
+        } else {
+            bootStartSwitch.thumbTintList = ColorStateList.valueOf(Color.GRAY)
+            bootStartSwitch.trackTintList = ColorStateList.valueOf(Color.DKGRAY)
+            bootStartText.setTextColor(Color.GRAY)
+        }
+    }
+
     private fun applyBoost(level: Int) {
         boostTextView.text = "$level%"
         boostTextView.setTextColor(if (level > 50) "#F92672".toColorInt() else Color.GRAY)
@@ -243,6 +293,7 @@ class MainActivity : AppCompatActivity() {
             putFloat("boost_value", boostSlider.value)
             putFloat("volume_value", volumeSlider.value)
             putBoolean("gradual_boost", gradualBoostSwitch.isChecked)
+            putBoolean("boot_start", bootStartSwitch.isChecked)
             apply()
         }
     }

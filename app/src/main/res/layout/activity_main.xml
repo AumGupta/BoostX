@@ -206,6 +206,38 @@
                     app:trackStopIndicatorSize="0dp" />
             </LinearLayout>
 
+            <!-- Auto Start Switch -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
+
+                <TextView
+                    android:id="@+id/bootStartText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="monospace"
+                    android:text="@string/start_on_boot_label"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="normal" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/bootStartSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:hapticFeedbackEnabled="true"
+                    android:minHeight="48dp"
+                    android:thumbTint="@color/gray"
+                    android:trackTint="@color/gray" />
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>
