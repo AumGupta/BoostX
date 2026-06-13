@@ -5,6 +5,8 @@ import android.media.AudioDeviceInfo
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.audiofx.LoudnessEnhancer
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 
 class AudioController(private val context: Context) {
@@ -14,10 +16,15 @@ class AudioController(private val context: Context) {
         private set
 
     private var lastDeviceId: Int? = null
-    var isBoostEnabled = true
+    private var hasRestarted = false
+    private val handler = Handler(Looper.getMainLooper())
 
     init {
-        loudnessEnhancer = LoudnessEnhancer(0)
+        try {
+            loudnessEnhancer = LoudnessEnhancer(0)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         audioSessionID = audioManager.generateAudioSessionId()
     }
 
@@ -29,9 +36,18 @@ class AudioController(private val context: Context) {
     }
 
     fun applyBoost(level: Int) {
-        loudnessEnhancer?.setTargetGain(level * 25)
-        loudnessEnhancer?.enabled = true
-        if (isBoostEnabled) restartAudioPlayback()
+        try {
+            loudnessEnhancer?.enabled = false
+            loudnessEnhancer?.setTargetGain(level * 30)
+            loudnessEnhancer?.enabled = level > 0
+
+            if (level > 0 && !hasRestarted) {
+                restartAudioPlayback()
+                hasRestarted = true
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun applyVolume(level: Int) {
@@ -44,15 +60,15 @@ class AudioController(private val context: Context) {
     }
 
     fun restartAudioPlayback() {
-        isBoostEnabled = false
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE))
+        val pauseIntent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE)
+        audioManager.dispatchMediaKeyEvent(pauseIntent)
         audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE))
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY))
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY))
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE))
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE))
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY))
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY))
+        
+        handler.postDelayed({
+            val playIntent = KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY)
+            audioManager.dispatchMediaKeyEvent(playIntent)
+            audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY))
+        }, 100)
     }
 
     fun getOutputDeviceInfo(): String? {
