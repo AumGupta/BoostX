@@ -1,3 +1,36 @@
 <resources>
     <string name="app_name">BoostX</string>
+    <string name="output_device_unknown">Output Device: Unknown</string>
+    <string name="volume_label">Volume: </string>
+    <string name="volume_slider_desc">Volume level slider</string>
+    <string name="boost_label">Boost: </string>
+    <string name="gradual_label">Gradual</string>
+    <string name="boost_slider_desc">Boost level slider</string>
+    <string name="start_on_boot_label">Start on Boot</string>
+
+    <string name="app_info_title">App Info</string>
+    <string name="version_label">Version:</string>
+    <string name="api_level_label">API Level:</string>
+    <string name="developer_label">Developer:</string>
+    <string name="source_label">Source:</string>
+    <string name="session_id_label">Session ID:</string>
+    <string name="package_label">Package:</string>
+    <string name="warning_text">Warning: Excessive boost may distort audio or harm speakers.</string>
+
+    <string name="no_device_detected">No Active Output Device Detected</string>
+    <string name="device_name_label">Device Name:</string>
+    <string name="device_type_label">Device Type:</string>
+    <string name="device_id_label">Device ID:</string>
+    <string name="channels_label">Channels:</string>
+    <string name="encodings_label">Encodings:</string>
+    <string name="sample_rates_label">Sample Rates:</string>
+
+    <string name="device_bluetooth">Bluetooth</string>
+    <string name="device_wired_headphones">Wired Headphones</string>
+    <string name="device_usb_audio">USB Audio</string>
+    <string name="device_hdmi">HDMI Output</string>
+    <string name="device_speaker">Device Speaker</string>
+    <string name="device_earpiece">Earpiece</string>
+    <string name="device_unknown">Unknown Device</string>
+    <string name="format_unknown">Unknown Format</string>
 </resources>
