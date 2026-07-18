@@ -33,4 +33,7 @@
     <string name="device_earpiece">Earpiece</string>
     <string name="device_unknown">Unknown Device</string>
     <string name="format_unknown">Unknown Format</string>
+    <string name="boost_service_channel_name">Background boost service</string>
+    <string name="boost_notification_title">BoostX active</string>
+    <string name="boost_notification_text">Keeping volume boost at %1$d%%</string>
 </resources>

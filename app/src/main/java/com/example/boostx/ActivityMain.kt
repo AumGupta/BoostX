@@ -2,6 +2,7 @@ package com.example.boostx
 
 import android.Manifest
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var outputDeviceTextView: TextView
 
     private lateinit var audioController: AudioController
+    private lateinit var prefs: SharedPreferences
 
     private val handler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
@@ -62,7 +64,8 @@ class MainActivity : AppCompatActivity() {
 
         checkPermissions()
 
-        audioController = AudioController(this)
+        audioController = AudioController.getInstance(this)
+        prefs = getSharedPreferences("BoostXPrefs", Context.MODE_PRIVATE)
 
         boostSlider = findViewById(R.id.boostSlider)
         volumeSlider = findViewById(R.id.volumeSlider)
@@ -88,9 +91,9 @@ class MainActivity : AppCompatActivity() {
 
         bootStartSwitch.setOnCheckedChangeListener { _, isChecked ->
             handleBootStartSwitch(isChecked)
+            updateServiceState()
         }
 
-        val prefs = getSharedPreferences("BoostXPrefs", Context.MODE_PRIVATE)
         val savedBoost = prefs.getFloat("boost_value", 0f)
         val savedVolume = prefs.getFloat("volume_value", 100f)
         val savedGradual = prefs.getBoolean("gradual_boost", false)
@@ -120,8 +123,12 @@ class MainActivity : AppCompatActivity() {
         applyBoost(validatedBoost.toInt())
         applyVolume(savedVolume.toInt())
 
-        boostSlider.addOnChangeListener { _, value, _ -> applyBoost(value.toInt()) }
-        volumeSlider.addOnChangeListener { _, value, _ -> applyVolume(value.toInt()) }
+        boostSlider.addOnChangeListener { _, value, _ ->
+            applyBoost(value.toInt())
+        }
+        volumeSlider.addOnChangeListener { _, value, _ ->
+            applyVolume(value.toInt())
+        }
 
         findViewById<TextView>(R.id.infoIcon).setOnClickListener {
             showAppInfo()
@@ -131,8 +138,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkPermissions() {
+        val permissions = mutableListOf<String>()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 1001)
+            permissions.add(Manifest.permission.RECORD_AUDIO)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+        if (permissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissions.toTypedArray(), 1001)
         }
     }
 
@@ -291,6 +307,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateServiceState() {
+        val boostActive = boostSlider.value > 0f
+        val bootStart = bootStartSwitch.isChecked
+        if (boostActive || bootStart) {
+            BoostService.start(this)
+        } else if (BoostService.isRunning) {
+            BoostService.stop(this)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         handler.post(updateRunnable)
@@ -300,7 +326,6 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         handler.removeCallbacks(updateRunnable)
 
-        val prefs = getSharedPreferences("BoostXPrefs", Context.MODE_PRIVATE)
         prefs.edit().apply {
             putFloat("boost_value", boostSlider.value)
             putFloat("volume_value", volumeSlider.value)
@@ -308,11 +333,14 @@ class MainActivity : AppCompatActivity() {
             putBoolean("boot_start", bootStartSwitch.isChecked)
             apply()
         }
+        updateServiceState()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        audioController.release()
+        if (!BoostService.isRunning) {
+            audioController.release()
+        }
         handler.removeCallbacks(updateRunnable)
         handler.removeCallbacksAndMessages(null)
     }
