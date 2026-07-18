@@ -87,10 +87,12 @@ class MainActivity : AppCompatActivity() {
         )
         gradualBoostSwitch.setOnCheckedChangeListener { _, isChecked ->
             handleGradualBoostSwitch(isChecked, originalBoostSliderProperties)
+            prefs.edit().putBoolean("gradual_boost", isChecked).apply()
         }
 
         bootStartSwitch.setOnCheckedChangeListener { _, isChecked ->
             handleBootStartSwitch(isChecked)
+            prefs.edit().putBoolean("boot_start", isChecked).apply()
             updateServiceState()
         }
 
@@ -125,9 +127,11 @@ class MainActivity : AppCompatActivity() {
 
         boostSlider.addOnChangeListener { _, value, _ ->
             applyBoost(value.toInt())
+            prefs.edit().putFloat("boost_value", value).apply()
         }
         volumeSlider.addOnChangeListener { _, value, _ ->
             applyVolume(value.toInt())
+            prefs.edit().putFloat("volume_value", value).apply()
         }
 
         findViewById<TextView>(R.id.infoIcon).setOnClickListener {
