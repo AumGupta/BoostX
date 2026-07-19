@@ -12,7 +12,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.KeyEvent
 
-class AudioController(private val context: Context) {
+class AudioController private constructor(private val context: Context) {
     private val audioManager: AudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var loudnessEnhancer: LoudnessEnhancer? = null
     private var dynamicsProcessing: DynamicsProcessing? = null
@@ -26,6 +26,17 @@ class AudioController(private val context: Context) {
     private val handler = Handler(Looper.getMainLooper())
 
     private var currentBoostLevel: Int = 0
+
+    companion object {
+        @Volatile
+        private var instance: AudioController? = null
+
+        fun getInstance(context: Context): AudioController {
+            return instance ?: synchronized(this) {
+                instance ?: AudioController(context.applicationContext).also { instance = it }
+            }
+        }
+    }
 
     init {
         setupEffects()
@@ -235,5 +246,9 @@ class AudioController(private val context: Context) {
         loudnessEnhancer?.release()
         dynamicsProcessing?.release()
         visualizer?.release()
+        loudnessEnhancer = null
+        dynamicsProcessing = null
+        visualizer = null
+        instance = null
     }
 }

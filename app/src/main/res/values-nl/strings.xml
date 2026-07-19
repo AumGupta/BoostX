@@ -33,4 +33,7 @@
     <string name="device_earpiece">Oortje</string>
     <string name="device_unknown">Onbekend apparaat</string>
     <string name="format_unknown">Onbekend formaat</string>
+    <string name="boost_service_channel_name">Achtergrond-boostservice</string>
+    <string name="boost_notification_title">BoostX actief</string>
+    <string name="boost_notification_text">Volumeboost actief op %1$d%%</string>
 </resources>
