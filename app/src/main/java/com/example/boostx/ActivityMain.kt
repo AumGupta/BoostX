@@ -80,7 +80,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var compareButton: MaterialButton
     private lateinit var effectsFailedBanner: LinearLayout
     private lateinit var retryEffectsButton: MaterialButton
-
+    private lateinit var boostCeilingHint: TextView
+    private lateinit var hardwareCard: LinearLayout
+    private lateinit var hardwareText: TextView
+    private lateinit var hardwareNote: TextView
     /** Voicing presets in the same order as the buttons in the toggle group. */
     private val presetButtons by lazy {
         listOf(
@@ -135,8 +138,25 @@ class MainActivity : AppCompatActivity() {
             }
             showEffectsFailedBanner(audioService?.audioController?.effectsFailed == true)
 
-            audioService?.audioController?.let { syncBoostCeiling(it) }
+            // The gain budget moves with the output route and with SoC throttling — keep the
+            // readout honest instead of showing a ceiling that is no longer being applied.
+            audioService?.audioController?.onHeadroomChanged = {
+                runOnUiThread {
+                    updateHardwareCard()
+                    updateBoostUI(boostSlider.value)
+                }
+            }
+
+            audioService?.audioController?.let { ctrl ->
+                syncBoostCeiling(ctrl)
+                // The service found the output long before this activity bound to it, so ask
+                // for the state we missed rather than waiting for the next change.
+                ctrl.describeCurrentDevice()?.let { outputDeviceTextView.text = it }
+                ctrl.emitCurrentDevice()
+            }
             showEngineHint()
+            updateHardwareCard()
+            updateBoostUI(boostSlider.value)
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -190,9 +210,13 @@ class MainActivity : AppCompatActivity() {
         compareButton = findViewById(R.id.compareButton)
         effectsFailedBanner = findViewById(R.id.effectsFailedBanner)
         retryEffectsButton = findViewById(R.id.retryEffectsButton)
-
+        boostCeilingHint = findViewById(R.id.boostCeilingHint)
+        hardwareCard = findViewById(R.id.hardwareCard)
+        hardwareText = findViewById(R.id.hardwareText)
+        hardwareNote = findViewById(R.id.hardwareNote)
         deviceProfileBar.visibility = View.GONE
         effectsFailedBanner.visibility = View.GONE
+        hardwareCard.visibility = View.GONE
 
         saveProfileButton.setOnClickListener { saveCurrentProfile() }
         findViewById<TextView>(R.id.infoIcon).setOnClickListener { showAppInfo() }
@@ -391,8 +415,24 @@ class MainActivity : AppCompatActivity() {
         audioService?.applyBalance(level)
     }
 
+    /**
+     * The slider is a percentage of *this output's* headroom, so the percentage alone says
+     * nothing about how hard the engine is actually pushing — 10 % into a wired flagship and
+     * 10 % into the built-in speaker are different amounts of gain. Show the dB too.
+     */
     private fun updateBoostUI(level: Float) {
-        boostTextView.text = getString(R.string.boost_value_format, level)
+        val ctrl = audioService?.audioController
+        val ceiling = ctrl?.gainCeilingDb
+        boostTextView.text = if (ctrl != null && ceiling != null && ceiling > 0f) {
+            getString(
+                R.string.boost_gain_format,
+                level,
+                ctrl.formatDb(level / AudioController.MAX_BOOST_PERCENT * ceiling)
+            )
+        } else {
+            getString(R.string.boost_value_format, level)
+        }
+
         // Thresholds sit on the 0–10 scale: past 7 is where a busy mix starts working the limiter.
         boostTextView.setTextColor(
             when {
@@ -400,6 +440,26 @@ class MainActivity : AppCompatActivity() {
                 level > 4f -> "#FFA500".toColorInt()
                 else -> Color.GRAY
             }
+        )
+    }
+
+    /**
+     * Shows what BoostX detected under the hood and — more usefully — anything currently
+     * holding the gain budget down, so a quieter-than-expected boost has a visible reason.
+     */
+    private fun updateHardwareCard() {
+        val ctrl = audioService?.audioController ?: return
+        hardwareCard.visibility = View.VISIBLE
+        hardwareText.text = ctrl.getDeviceSummary()
+
+        val note = ctrl.advisoryNote()
+        hardwareNote.text = note ?: ""
+        hardwareNote.visibility = if (note != null) View.VISIBLE else View.GONE
+
+        boostCeilingHint.text = getString(
+            R.string.boost_ceiling_dynamic,
+            ctrl.formatDb(ctrl.gainCeilingDb),
+            ctrl.headroomQualifier()
         )
     }
 
@@ -604,9 +664,24 @@ class MainActivity : AppCompatActivity() {
     // ──────────────────────────────────────────────────────────────────────────
 
     private fun checkPermissions() {
+        val needed = mutableListOf<String>()
+
+        // The Visualizer tap that drives Auto Loudness counts as recording.
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
             != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 1001)
+            needed += Manifest.permission.RECORD_AUDIO
+        }
+
+        // From Android 13 the foreground-service notification is silently dropped without
+        // this — which takes the whole ongoing-service UI with it.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED) {
+            needed += Manifest.permission.POST_NOTIFICATIONS
+        }
+
+        if (needed.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, needed.toTypedArray(), 1001)
         }
     }
 

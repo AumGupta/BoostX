@@ -123,6 +123,48 @@
                 android:textColor="@color/gray"
                 android:textSize="16sp" />
 
+            <!-- Detected hardware: SoC, spatial audio, mixer rate, and anything currently
+                 clamping the headroom budget. Filled in by MainActivity.updateHardwareCard(). -->
+            <LinearLayout
+                android:id="@+id/hardwareCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:layout_marginBottom="16dp"
+                android:background="#0D0D0D"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="@string/hardware_title"
+                    android:textColor="@color/neon_yellow"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/hardwareText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="monospace"
+                    android:textColor="#888888"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/hardwareNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="monospace"
+                    android:textColor="#FFA500"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
             <!-- A/B compare — press and hold to hear the raw, unprocessed signal -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/compareButton"

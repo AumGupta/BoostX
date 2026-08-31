@@ -78,4 +78,31 @@
     <string name="preset_bass">Bas</string>
     <string name="preset_movie">Film</string>
     <string name="preset_night">Nacht</string>
+
+    <!-- Hardware-afhankelijke marge -->
+    <string name="boost_gain_format">%1$.1f%% · %2$s</string>
+    <string name="boost_ceiling_dynamic">Tot %1$s op deze uitgang — %2$s</string>
+
+    <string name="link_label">Verbinding:</string>
+    <string name="headroom_label">Marge:</string>
+    <string name="latency_label">Vertraging:</string>
+    <string name="latency_local_format">%1$s (lokale uitgang, exclusief de bluetoothverbinding)</string>
+
+    <string name="headroom_format">%1$s · %2$s</string>
+    <string name="headroom_limited">piekbegrensd</string>
+    <string name="headroom_thermal">verlaagd, apparaat is warm</string>
+    <string name="headroom_unlimited_path">geen begrenzer, beperkt</string>
+
+    <string name="device_ble_audio">LE Audio</string>
+    <string name="device_hearing_aid">Hoortoestel</string>
+    <string name="device_line_out">Lijnuitgang</string>
+
+    <string name="codec_standard_note">Deze verbinding gebruikt een standaardcodec (AAC of SBC); BoostX heeft de versterking van de hoogste tonen teruggeschroefd om compressieartefacten niet te versterken. Schakel LDAC in bij Ontwikkelaarsopties voor het volledige bereik.</string>
+
+    <string name="spatializer_active">Ruimtelijke audio ✓</string>
+
+    <string name="hardware_title">Hardware</string>
+    <string name="hardware_thermal_warning">Apparaat is warm — het versterkingsplafond is verlaagd om de versterker te beschermen.</string>
+    <string name="hardware_spatializer_note">Ruimtelijke audio van het systeem staat aan; BoostX heeft de eigen verbreding teruggeschroefd om het middenbeeld niet uit te smeren.</string>
+    <string name="hardware_multipoint_note">Er is meer dan één bluetooth-uitgang verbonden. De verwerking volgt de uitgang die daadwerkelijk afspeelt.</string>
 </resources>

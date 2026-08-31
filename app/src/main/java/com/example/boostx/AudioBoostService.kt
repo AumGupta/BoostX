@@ -8,12 +8,14 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 
 class AudioBoostService : Service() {
 
@@ -69,21 +71,21 @@ class AudioBoostService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_STOP) {
-            @Suppress("DEPRECATION")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                stopForeground(STOP_FOREGROUND_REMOVE)
-            } else {
-                stopForeground(true)
-            }
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
             stopSelf()
             return START_NOT_STICKY
         }
 
         val savedPrefs = getSharedPreferences(PREFS, MODE_PRIVATE)
-        boostLevel = intent?.getFloatExtra(EXTRA_BOOST, savedPrefs.getFloat(KEY_BOOST, 0f)) ?: 0f
-        volumeLevel = intent?.getIntExtra(EXTRA_VOLUME, savedPrefs.getFloat(KEY_VOLUME, 100f).toInt()) ?: 100
+        // A START_STICKY relaunch hands us a null intent. Falling back to 0/100 there would
+        // silently wipe the user's boost every time the system restarted the service — the
+        // saved prefs are the fallback, not the defaults.
+        val savedBoost = savedPrefs.getFloat(KEY_BOOST, 0f)
+        val savedVolume = savedPrefs.getFloat(KEY_VOLUME, 100f).toInt()
+        boostLevel = intent?.getFloatExtra(EXTRA_BOOST, savedBoost) ?: savedBoost
+        volumeLevel = intent?.getIntExtra(EXTRA_VOLUME, savedVolume) ?: savedVolume
 
-        startForeground(NOTIFICATION_ID, buildNotification())
+        startForegroundCompat()
 
         // Restore the saved voicing before the boost so the first frames are already shaped.
         audioController.setEnhanceEnabled(savedPrefs.getBoolean(KEY_ENHANCE, false))
@@ -162,6 +164,7 @@ class AudioBoostService : Service() {
         prefs().edit().putBoolean(KEY_CALL_BOOST, enabled).apply()
     }
 
+
     private fun prefs() = getSharedPreferences(PREFS, MODE_PRIVATE)
 
     private fun savePrefs() {
@@ -186,6 +189,23 @@ class AudioBoostService : Service() {
     private fun scheduleNotificationUpdate() {
         handler.removeCallbacks(notificationUpdateRunnable)
         handler.postDelayed(notificationUpdateRunnable, PERSIST_DEBOUNCE_MS)
+    }
+
+    /**
+     * From Android 10 the foreground type has to be named at start time as well as in the
+     * manifest, and from Android 14 a mismatch is a hard [IllegalArgumentException].
+     */
+    private fun startForegroundCompat() {
+        ServiceCompat.startForeground(
+            this,
+            NOTIFICATION_ID,
+            buildNotification(),
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+            } else {
+                0
+            }
+        )
     }
 
     private fun buildNotification(): Notification {

@@ -1,6 +1,7 @@
 package com.example.boostx
 
 import android.content.Intent
+import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 
@@ -44,10 +45,13 @@ class QuickBoostTileService : TileService() {
         qsTile?.apply {
             state = if (boost > 0f || enhance) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
             label = getString(R.string.app_name)
-            subtitle = when {
-                boost > 0f -> getString(R.string.boost_value_format, boost)
-                enhance -> getString(R.string.tile_enhance_only)
-                else -> getString(R.string.tile_off)
+            // Tile subtitles arrived in Android 10; on Oreo and Pie the label is all there is.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                subtitle = when {
+                    boost > 0f -> getString(R.string.boost_value_format, boost)
+                    enhance -> getString(R.string.tile_enhance_only)
+                    else -> getString(R.string.tile_off)
+                }
             }
             updateTile()
         }
