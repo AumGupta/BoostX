@@ -7,6 +7,56 @@
     <string name="gradual_label">Gradual</string>
     <string name="boost_slider_desc">Boost level slider</string>
     <string name="start_on_boot_label">Start on Boot</string>
+    <string name="boost_value_format">%.1f%%</string>
+    <string name="boost_ceiling_hint" formatted="false">Capped at 10% of full scale — clean gain, no clipping.</string>
+    <!-- %1$.1f = boost on the 0–10 scale, %2$s = what that is in dB on this output -->
+    <string name="boost_gain_format">%1$.1f%% · %2$s</string>
+    <!-- %1$s = ceiling in dB, %2$s = why it is that number -->
+    <string name="boost_ceiling_dynamic">Up to %1$s on this output — %2$s</string>
+
+    <!-- Sound enhancement -->
+    <string name="enhance_label">Sound Enhancement</string>
+    <string name="enhance_hint">Clarity lifts detail and cuts muddiness. Depth adds sub-bass and stereo width. Both are peak-limited.</string>
+    <string name="enhance_hint_dolby">Dolby Atmos is active and re-EQs the mix after BoostX. Turn it off in Settings › Sounds › Sound quality and effects for a clean result.</string>
+    <string name="enhance_hint_legacy">This device predates the multiband engine — clarity and depth run on the classic equalizer, with a coarser curve.</string>
+    <string name="clarity_label">Clarity</string>
+    <string name="clarity_slider_desc">Clarity level slider</string>
+    <string name="depth_label">Depth</string>
+    <string name="depth_slider_desc">Depth level slider</string>
+
+    <!-- Balance -->
+    <string name="balance_label">Balance</string>
+    <string name="balance_slider_desc">Left-right balance slider</string>
+    <string name="balance_center">Center</string>
+    <string name="balance_left_format">L %d%%</string>
+    <string name="balance_right_format">R %d%%</string>
+
+    <!-- Noise gate -->
+    <string name="noise_gate_label">Noise Gate</string>
+    <string name="noise_gate_hint">Cuts background hiss under quiet speech — good for podcasts and voice notes.</string>
+
+    <!-- Real-time loudness normalization -->
+    <string name="normalize_label">Auto Loudness</string>
+    <string name="normalize_hint">Evens out volume jumps between tracks and apps in real time. Works within the same safety ceiling as Boost.</string>
+
+    <!-- Call boost -->
+    <string name="call_boost_label">Boost Calls</string>
+    <string name="call_boost_hint">Raises call volume to the system maximum automatically when a call starts (cellular or VoIP). BoostX cannot re-EQ call audio on all devices — this only controls volume.</string>
+
+    <!-- A/B compare -->
+    <string name="compare_button_label">Hold to Compare</string>
+    <string name="compare_active_label">Release to Restore</string>
+
+    <!-- Effects failure banner -->
+    <string name="effects_failed_title">Audio Effects Unavailable</string>
+    <string name="effects_failed_message">BoostX couldn\'t attach to the system audio engine. This can happen right after boot — try again.</string>
+    <string name="retry_button">Retry</string>
+
+    <string name="preset_balanced">Balanced</string>
+    <string name="preset_vocal">Vocal</string>
+    <string name="preset_bass">Bass</string>
+    <string name="preset_movie">Movie</string>
+    <string name="preset_night">Night</string>
 
     <string name="app_info_title">App Info</string>
     <string name="version_label">Version:</string>
@@ -24,13 +74,81 @@
     <string name="channels_label">Channels:</string>
     <string name="encodings_label">Encodings:</string>
     <string name="sample_rates_label">Sample Rates:</string>
+    <string name="codec_label">Codec:</string>
+    <string name="link_label">Link:</string>
+    <string name="headroom_label">Headroom:</string>
+    <string name="latency_label">Latency:</string>
 
     <string name="device_bluetooth">Bluetooth</string>
+    <string name="device_ble_audio">LE Audio</string>
+    <string name="device_hearing_aid">Hearing Aid</string>
     <string name="device_wired_headphones">Wired Headphones</string>
     <string name="device_usb_audio">USB Audio</string>
     <string name="device_hdmi">HDMI Output</string>
+    <string name="device_line_out">Line Out</string>
     <string name="device_speaker">Device Speaker</string>
     <string name="device_earpiece">Earpiece</string>
     <string name="device_unknown">Unknown Device</string>
     <string name="format_unknown">Unknown Format</string>
+
+    <!-- Codecs are inferred from the link's advertised capability. Android does not expose
+         the negotiated A2DP codec to ordinary apps, so LDAC is identified by its sample
+         rate and AAC/SBC are reported together rather than guessed at. -->
+    <string name="codec_ldac_hires" translatable="false">LDAC · Hi-Res 96 kHz</string>
+    <string name="codec_ldac" translatable="false">LDAC</string>
+    <string name="codec_a2dp_standard" translatable="false">AAC / SBC</string>
+    <string name="codec_aptx_adaptive" translatable="false">Snapdragon Sound · aptX Adaptive</string>
+    <string name="codec_le_lc3" translatable="false">LE Audio · LC3</string>
+    <string name="codec_hires_pcm" translatable="false">PCM Float · Hi-Res</string>
+    <string name="codec_standard_note">This link is on a standard codec (AAC or SBC), so BoostX has scaled its top-octave lift back to avoid amplifying compression artefacts. Enable LDAC in Developer options to restore the full range.</string>
+
+    <!-- %1$s = local output burst in ms -->
+    <string name="latency_local_format">%1$s (local output, excludes the Bluetooth link)</string>
+
+    <!-- Headroom budget — how much gain this output can take, and what is deciding that -->
+    <!-- %1$s = dB ceiling, %2$s = qualifier below -->
+    <string name="headroom_format">%1$s · %2$s</string>
+    <string name="headroom_limited">peak-limited</string>
+    <string name="headroom_thermal">reduced, device is hot</string>
+    <string name="headroom_unlimited_path">no limiter, capped</string>
+
+    <!-- ForegroundService notifications -->
+    <string name="service_channel_name">BoostX Audio Service</string>
+    <string name="service_channel_desc">Keeps audio boost active while screen is off</string>
+    <string name="service_boost_active">Boost %.1f%% — Active</string>
+    <string name="service_boost_and_enhance">Boost %1$.1f%% · %2$s — Active</string>
+    <string name="service_enhance_only">Enhancement on · %s</string>
+    <string name="service_boost_off">Boost off — tap to configure</string>
+    <string name="service_stop">Stop</string>
+    <string name="service_running">● Running in background</string>
+    <string name="service_stopped">○ Service not running</string>
+
+    <!-- Quick Settings tile -->
+    <string name="tile_off">Off</string>
+    <string name="tile_enhance_only">Enhance</string>
+
+    <!-- Samsung / Snapdragon info -->
+    <string name="dolby_active">Dolby Atmos ✓</string>
+    <string name="dolby_absent">No Dolby</string>
+    <string name="spatializer_active">Spatial Audio ✓</string>
+    <string name="max_boost_label">Max: %.1f%%</string>
+    <string name="engine_label">Engine: %s</string>
+
+    <!-- Hardware card -->
+    <string name="hardware_title">Hardware</string>
+    <string name="hardware_thermal_warning">Device is warm — boost ceiling reduced to protect the amplifier.</string>
+    <string name="hardware_spatializer_note">System Spatial Audio is on; BoostX has stepped its own widening back to avoid smearing the centre image.</string>
+    <string name="hardware_multipoint_note">More than one Bluetooth sink is connected. Processing follows whichever output is actually playing.</string>
+
+    <!-- Device profiles -->
+    <string name="profile_loaded">%s — profile loaded</string>
+    <string name="profile_none">%s — no saved profile</string>
+    <string name="profile_saved">Profile saved for %s</string>
+    <string name="save_profile">Save Profile</string>
+
+    <!-- Battery optimization dialog -->
+    <string name="battery_opt_title">Battery Optimization</string>
+    <string name="battery_opt_message">Disable battery optimization so BoostX stays active when the screen is off.</string>
+    <string name="settings_label">Settings</string>
+    <string name="cancel_label">Cancel</string>
 </resources>

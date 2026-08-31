@@ -8,18 +8,16 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <!-- Non-Scrollable Title Bar -->
+    <!-- Title Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="fill"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="4dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="14dp"
         android:paddingEnd="14dp">
 
-        <!-- App Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,7 +28,6 @@
             android:textSize="26sp"
             android:textStyle="bold" />
 
-        <!-- Info Icon -->
         <TextView
             android:id="@+id/infoIcon"
             android:layout_width="wrap_content"
@@ -42,6 +39,19 @@
             android:textColor="@color/neon_yellow"
             android:textSize="24sp" />
     </LinearLayout>
+
+    <!-- Service status line -->
+    <TextView
+        android:id="@+id/serviceStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="monospace"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:text="@string/service_stopped"
+        android:textColor="#555555"
+        android:textSize="12sp" />
 
     <!-- Scrollable Content -->
     <ScrollView
@@ -55,18 +65,156 @@
             android:gravity="start"
             android:orientation="vertical">
 
+            <!-- Audio effects failure banner — visible only if the effects engine failed to attach -->
+            <LinearLayout
+                android:id="@+id/effectsFailedBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:background="#1A0D0D"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="@string/effects_failed_title"
+                    android:textColor="#F92672"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="monospace"
+                    android:text="@string/effects_failed_message"
+                    android:textColor="#888888"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/retryEffectsButton"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="@string/retry_button"
+                    android:textColor="#F92672"
+                    android:textSize="12sp"
+                    app:strokeColor="#F92672"
+                    app:strokeWidth="1dp" />
+            </LinearLayout>
+
             <!-- Audio Device Information -->
             <TextView
                 android:id="@+id/outputDeviceText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="48dp"
+                android:layout_marginBottom="12dp"
                 android:fontFamily="monospace"
                 android:paddingStart="14dp"
                 android:paddingEnd="14dp"
                 android:text="@string/output_device_unknown"
                 android:textColor="@color/gray"
                 android:textSize="16sp" />
+
+            <!-- Detected hardware: SoC, spatial audio, mixer rate, and anything currently
+                 clamping the headroom budget. Filled in by MainActivity.updateHardwareCard(). -->
+            <LinearLayout
+                android:id="@+id/hardwareCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:layout_marginBottom="16dp"
+                android:background="#0D0D0D"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="@string/hardware_title"
+                    android:textColor="@color/neon_yellow"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/hardwareText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="monospace"
+                    android:textColor="#888888"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/hardwareNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="monospace"
+                    android:textColor="#FFA500"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- A/B compare — press and hold to hear the raw, unprocessed signal -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/compareButton"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="monospace"
+                android:text="@string/compare_button_label"
+                android:textColor="@color/gray"
+                android:textSize="12sp"
+                app:strokeColor="@color/gray"
+                app:strokeWidth="1dp" />
+
+            <!-- Bluetooth device profile bar — visible only when BT device connected -->
+            <LinearLayout
+                android:id="@+id/deviceProfileBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:background="#0D0D0D"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/deviceProfileText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="monospace"
+                    android:textColor="#888888"
+                    android:textSize="13sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/saveProfileButton"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="@string/save_profile"
+                    android:textColor="@color/neon_yellow"
+                    android:textSize="12sp"
+                    app:strokeColor="@color/neon_yellow"
+                    app:strokeWidth="1dp" />
+            </LinearLayout>
 
             <!-- Volume Controls -->
             <LinearLayout
@@ -76,7 +224,6 @@
                 android:gravity="start"
                 android:orientation="vertical">
 
-                <!-- Volume Information -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -92,8 +239,7 @@
                         android:fontFamily="monospace"
                         android:text="@string/volume_label"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="normal" />
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/volumeLevel"
@@ -134,7 +280,6 @@
                 android:gravity="start"
                 android:orientation="vertical">
 
-                <!-- Boost Information with Switch -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -150,8 +295,7 @@
                         android:fontFamily="monospace"
                         android:text="@string/boost_label"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="normal" />
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/boostLevel"
@@ -163,7 +307,6 @@
                         android:textColor="@color/gray"
                         android:textSize="18sp" />
 
-                    <!-- Gradual Boost Switch (Aligned end) -->
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/gradualBoostSwitch"
                         android:layout_width="wrap_content"
@@ -185,10 +328,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/boost_slider_desc"
-                    android:stepSize="10"
+                    android:stepSize="1"
                     android:value="0"
                     android:valueFrom="0"
-                    android:valueTo="100"
+                    android:valueTo="10"
                     app:haloRadius="0dp"
                     app:thumbElevation="0dp"
                     app:thumbHeight="40dp"
@@ -197,13 +340,380 @@
                     app:thumbWidth="14dp"
                     app:tickColorActive="@color/neon_yellow"
                     app:tickColorInactive="@color/neon_yellow"
-                    app:tickRadiusActive="6dp"
+                    app:tickRadiusActive="3dp"
                     app:tickRadiusInactive="0dp"
                     app:tickVisible="true"
                     app:trackColorActive="@color/neon_yellow"
                     app:trackHeight="6dp"
                     app:trackInsideCornerSize="2dp"
                     app:trackStopIndicatorSize="0dp" />
+
+                <TextView
+                    android:id="@+id/boostCeilingHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="monospace"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:text="@string/boost_ceiling_hint"
+                    android:textColor="#555555"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- ── Sound Enhancement ─────────────────────────────────────── -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:background="#1A1A1A" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
+
+                <TextView
+                    android:id="@+id/enhanceTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="monospace"
+                    android:text="@string/enhance_label"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/enhanceSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hapticFeedbackEnabled="true"
+                    android:minHeight="48dp"
+                    android:thumbTint="@color/gray"
+                    android:trackTint="@color/gray" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/enhancePanel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Voicing presets -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:scrollbars="none">
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/presetGroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/presetBalanced"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:text="@string/preset_balanced"
+                            android:textSize="12sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/presetVocal"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:text="@string/preset_vocal"
+                            android:textSize="12sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/presetBass"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:text="@string/preset_bass"
+                            android:textSize="12sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/presetMovie"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:text="@string/preset_movie"
+                            android:textSize="12sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/presetNight"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="monospace"
+                            android:text="@string/preset_night"
+                            android:textSize="12sp" />
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+                </HorizontalScrollView>
+
+                <!-- Clarity -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
+
+                    <TextView
+                        android:id="@+id/clarityTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="monospace"
+                        android:text="@string/clarity_label"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/clarityLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="0%"
+                        android:textColor="@color/gray"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/claritySlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/clarity_slider_desc"
+                    android:stepSize="5"
+                    android:value="0"
+                    android:valueFrom="0"
+                    android:valueTo="100"
+                    app:haloRadius="0dp"
+                    app:thumbElevation="0dp"
+                    app:thumbHeight="28dp"
+                    app:thumbRadius="28dp"
+                    app:thumbTrackGapSize="8dp"
+                    app:thumbWidth="10dp"
+                    app:tickVisible="false"
+                    app:trackColorActive="@color/neon_yellow"
+                    app:trackHeight="6dp"
+                    app:trackInsideCornerSize="2dp"
+                    app:trackStopIndicatorSize="0dp" />
+
+                <!-- Depth -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
+
+                    <TextView
+                        android:id="@+id/depthTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="monospace"
+                        android:text="@string/depth_label"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/depthLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="0%"
+                        android:textColor="@color/gray"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/depthSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/depth_slider_desc"
+                    android:stepSize="5"
+                    android:value="0"
+                    android:valueFrom="0"
+                    android:valueTo="100"
+                    app:haloRadius="0dp"
+                    app:thumbElevation="0dp"
+                    app:thumbHeight="28dp"
+                    app:thumbRadius="28dp"
+                    app:thumbTrackGapSize="8dp"
+                    app:thumbWidth="10dp"
+                    app:tickVisible="false"
+                    app:trackColorActive="@color/neon_yellow"
+                    app:trackHeight="6dp"
+                    app:trackInsideCornerSize="2dp"
+                    app:trackStopIndicatorSize="0dp" />
+
+                <!-- Balance -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
+
+                    <TextView
+                        android:id="@+id/balanceTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="monospace"
+                        android:text="@string/balance_label"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/balanceLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="@string/balance_center"
+                        android:textColor="@color/gray"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/balanceSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/balance_slider_desc"
+                    android:stepSize="5"
+                    android:value="0"
+                    android:valueFrom="-100"
+                    android:valueTo="100"
+                    app:haloRadius="0dp"
+                    app:thumbElevation="0dp"
+                    app:thumbHeight="28dp"
+                    app:thumbRadius="28dp"
+                    app:thumbTrackGapSize="8dp"
+                    app:thumbWidth="10dp"
+                    app:tickVisible="false"
+                    app:trackColorActive="@color/neon_yellow"
+                    app:trackHeight="6dp"
+                    app:trackInsideCornerSize="2dp"
+                    app:trackStopIndicatorSize="0dp" />
+
+                <!-- Noise Gate -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
+
+                    <TextView
+                        android:id="@+id/noiseGateText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="monospace"
+                        android:text="@string/noise_gate_label"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/noiseGateSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true"
+                        android:minHeight="48dp"
+                        android:thumbTint="@color/gray"
+                        android:trackTint="@color/gray" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/noiseGateHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:text="@string/noise_gate_hint"
+                    android:textColor="#555555"
+                    android:textSize="12sp" />
+
+                <!-- Auto Loudness (real-time normalization) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
+
+                    <TextView
+                        android:id="@+id/normalizeText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="monospace"
+                        android:text="@string/normalize_label"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/normalizeSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true"
+                        android:minHeight="48dp"
+                        android:thumbTint="@color/gray"
+                        android:trackTint="@color/gray" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/normalizeHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:text="@string/normalize_hint"
+                    android:textColor="#555555"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/enhanceHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="monospace"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:text="@string/enhance_hint"
+                    android:textColor="#555555"
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <!-- Auto Start Switch -->
@@ -224,21 +734,61 @@
                     android:fontFamily="monospace"
                     android:text="@string/start_on_boot_label"
                     android:textColor="@color/white"
-                    android:textSize="18sp"
-                    android:textStyle="normal" />
+                    android:textSize="18sp" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/bootStartSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
                     android:hapticFeedbackEnabled="true"
                     android:minHeight="48dp"
                     android:thumbTint="@color/gray"
                     android:trackTint="@color/gray" />
             </LinearLayout>
 
-        </LinearLayout>
+            <!-- Call Boost -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
 
+                <TextView
+                    android:id="@+id/callBoostText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="monospace"
+                    android:text="@string/call_boost_label"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/callBoostSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hapticFeedbackEnabled="true"
+                    android:minHeight="48dp"
+                    android:thumbTint="@color/gray"
+                    android:trackTint="@color/gray" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/callBoostHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="monospace"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="@string/call_boost_hint"
+                android:textColor="#555555"
+                android:textSize="12sp" />
+
+        </LinearLayout>
     </ScrollView>
 </LinearLayout>

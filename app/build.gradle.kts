@@ -5,14 +5,17 @@ plugins {
 
 android {
     namespace = "com.example.boostx"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.boostx"
-        minSdk = 24
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        // 26 is the real floor: the app is built around a foreground service and a
+        // notification channel, both of which are Oreo APIs. Below it the first
+        // startForegroundService() call is a hard crash, not a degraded experience.
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -25,6 +28,11 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+    testOptions {
+        // The hardware maths is pure, but it reads android.* constants — keep stubbed
+        // framework calls returning defaults instead of throwing.
+        unitTests.isReturnDefaultValues = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

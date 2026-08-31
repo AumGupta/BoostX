@@ -33,4 +33,76 @@
     <string name="device_earpiece">Oortje</string>
     <string name="device_unknown">Onbekend apparaat</string>
     <string name="format_unknown">Onbekend formaat</string>
+
+    <!-- Geluidsverbetering -->
+    <string name="enhance_label">Geluidsverbetering</string>
+    <string name="enhance_hint">Helderheid tilt detail op en snijdt modderigheid weg. Diepte voegt sub-bas en stereobreedte toe. Beide zijn piekbegrensd.</string>
+    <string name="enhance_hint_dolby">Dolby Atmos is actief en past de EQ opnieuw toe ná BoostX. Zet het uit via Instellingen › Geluiden › Geluidskwaliteit en effecten voor een schoon resultaat.</string>
+    <string name="enhance_hint_legacy">Dit apparaat is ouder dan de multiband-engine — helderheid en diepte draaien op de klassieke equalizer, met een grovere curve.</string>
+    <string name="clarity_label">Helderheid</string>
+    <string name="clarity_slider_desc">Schuifregelaar voor helderheid</string>
+    <string name="depth_label">Diepte</string>
+    <string name="depth_slider_desc">Schuifregelaar voor diepte</string>
+    <string name="boost_ceiling_hint" formatted="false">Begrensd op 10% van de volledige schaal — schone versterking, geen vervorming.</string>
+
+    <!-- Balans -->
+    <string name="balance_label">Balans</string>
+    <string name="balance_slider_desc">Schuifregelaar voor links-rechts balans</string>
+    <string name="balance_center">Midden</string>
+    <string name="balance_left_format">L %d%%</string>
+    <string name="balance_right_format">R %d%%</string>
+
+    <!-- Ruispoort -->
+    <string name="noise_gate_label">Ruispoort</string>
+    <string name="noise_gate_hint">Snijdt achtergrondruis onder zachte spraak weg — handig voor podcasts en spraakberichten.</string>
+
+    <!-- Automatisch volume in real time -->
+    <string name="normalize_label">Automatisch volume</string>
+    <string name="normalize_hint">Vlakt volumesprongen tussen nummers en apps in real time af. Blijft binnen dezelfde veiligheidsgrens als Boost.</string>
+
+    <!-- Gesprek versterken -->
+    <string name="call_boost_label">Gesprek versterken</string>
+    <string name="call_boost_hint">Zet het gespreksvolume automatisch op maximaal zodra een gesprek begint (bellen of VoIP). BoostX kan niet op elk apparaat de EQ van gesprekken aanpassen — dit regelt alleen het volume.</string>
+
+    <!-- A/B vergelijken -->
+    <string name="compare_button_label">Ingedrukt houden om te vergelijken</string>
+    <string name="compare_active_label">Loslaten om te herstellen</string>
+
+    <!-- Storingsbanner -->
+    <string name="effects_failed_title">Audio-effecten niet beschikbaar</string>
+    <string name="effects_failed_message">BoostX kon geen verbinding maken met de systeem-audio-engine. Dit kan vlak na het opstarten gebeuren — probeer het opnieuw.</string>
+    <string name="retry_button">Opnieuw proberen</string>
+
+    <string name="preset_balanced">Gebalanceerd</string>
+    <string name="preset_vocal">Stem</string>
+    <string name="preset_bass">Bas</string>
+    <string name="preset_movie">Film</string>
+    <string name="preset_night">Nacht</string>
+
+    <!-- Hardware-afhankelijke marge -->
+    <string name="boost_gain_format">%1$.1f%% · %2$s</string>
+    <string name="boost_ceiling_dynamic">Tot %1$s op deze uitgang — %2$s</string>
+
+    <string name="link_label">Verbinding:</string>
+    <string name="headroom_label">Marge:</string>
+    <string name="latency_label">Vertraging:</string>
+    <string name="latency_local_format">%1$s (lokale uitgang, exclusief de bluetoothverbinding)</string>
+
+    <string name="headroom_format">%1$s · %2$s</string>
+    <string name="headroom_limited">piekbegrensd</string>
+    <string name="headroom_thermal">verlaagd, apparaat is warm</string>
+    <string name="headroom_unlimited_path">geen begrenzer, beperkt</string>
+
+    <string name="device_ble_audio">LE Audio</string>
+    <string name="device_hearing_aid">Hoortoestel</string>
+    <string name="device_line_out">Lijnuitgang</string>
+
+    <string name="codec_standard_note">Deze verbinding gebruikt een standaardcodec (AAC of SBC); BoostX heeft de versterking van de hoogste tonen teruggeschroefd om compressieartefacten niet te versterken. Schakel LDAC in bij Ontwikkelaarsopties voor het volledige bereik.</string>
+
+    <string name="spatializer_active">Ruimtelijke audio ✓</string>
+
+    <string name="hardware_title">Hardware</string>
+    <string name="hardware_thermal_warning">Apparaat is warm — het versterkingsplafond is verlaagd om de versterker te beschermen.</string>
+    <string name="hardware_spatializer_note">Ruimtelijke audio van het systeem staat aan; BoostX heeft de eigen verbreding teruggeschroefd om het middenbeeld niet uit te smeren.</string>
+    <string name="hardware_multipoint_note">Er is meer dan één bluetooth-uitgang verbonden. De verwerking volgt de uitgang die daadwerkelijk afspeelt.</string>
 </resources>
