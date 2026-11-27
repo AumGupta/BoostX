@@ -3,8 +3,10 @@ package com.example.boostx
 import android.media.AudioDeviceInfo
 import android.os.PowerManager
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.util.Locale
 
 /**
  * Covers the gain-budget maths — the part of the hardware layer that decides how loud
@@ -137,5 +139,57 @@ class HardwareProfileTest {
             val scale = HardwareProfile.airScaleFor(tier)
             assertTrue("$tier produced $scale", scale in 0f..1f)
         }
+    }
+
+    // ── Dolby state resolution & formatting ───────────────────────────────────
+
+    @Test
+    fun `dolby derating applies only on Samsung when package exists and setting is not off`() {
+        assertFalse(HardwareProfile.isDolbyActiveFor(isSamsung = false, packageInstalled = true, dolbySetting = 1))
+        assertFalse(HardwareProfile.isDolbyActiveFor(isSamsung = true, packageInstalled = false, dolbySetting = 1))
+        assertFalse(HardwareProfile.isDolbyActiveFor(isSamsung = true, packageInstalled = true, dolbySetting = 0))
+        assertTrue(HardwareProfile.isDolbyActiveFor(isSamsung = true, packageInstalled = true, dolbySetting = 1))
+        assertTrue(HardwareProfile.isDolbyActiveFor(isSamsung = true, packageInstalled = true, dolbySetting = -1))
+    }
+
+    @Test
+    fun `sample rate formatting uses US decimal point regardless of default locale`() {
+        val original = Locale.getDefault()
+        try {
+            Locale.setDefault(Locale.forLanguageTag("nl-NL"))
+            assertEquals("44.1 kHz", HardwareProfile.formatSampleRateKhz(44100))
+            assertEquals("48 kHz", HardwareProfile.formatSampleRateKhz(48000))
+            assertEquals("96 kHz", HardwareProfile.formatSampleRateKhz(96000))
+        } finally {
+            Locale.setDefault(original)
+        }
+    }
+
+    @Test
+    fun `codecTierFor distinguishes Bluetooth hi-res, standard A2DP, and LE audio`() {
+        assertEquals(
+            HardwareProfile.CodecTier.LE_LC3,
+            HardwareProfile.codecTierFor(HardwareProfile.Route.BLUETOOTH_LE, 48000, hasHiResPcm = false, supportsSnapdragonSound = false)
+        )
+        assertEquals(
+            HardwareProfile.CodecTier.LDAC_HIRES,
+            HardwareProfile.codecTierFor(HardwareProfile.Route.BLUETOOTH, 96000, hasHiResPcm = false, supportsSnapdragonSound = false)
+        )
+        assertEquals(
+            HardwareProfile.CodecTier.APTX_ADAPTIVE,
+            HardwareProfile.codecTierFor(HardwareProfile.Route.BLUETOOTH, 48000, hasHiResPcm = true, supportsSnapdragonSound = true)
+        )
+        assertEquals(
+            HardwareProfile.CodecTier.LDAC,
+            HardwareProfile.codecTierFor(HardwareProfile.Route.BLUETOOTH, 48000, hasHiResPcm = true, supportsSnapdragonSound = false)
+        )
+        assertEquals(
+            HardwareProfile.CodecTier.A2DP_STANDARD,
+            HardwareProfile.codecTierFor(HardwareProfile.Route.BLUETOOTH, 48000, hasHiResPcm = false, supportsSnapdragonSound = false)
+        )
+        assertEquals(
+            HardwareProfile.CodecTier.HIRES_PCM,
+            HardwareProfile.codecTierFor(HardwareProfile.Route.USB, 192000, hasHiResPcm = true, supportsSnapdragonSound = false)
+        )
     }
 }
