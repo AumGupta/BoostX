@@ -7,6 +7,7 @@
     <string name="gradual_label">Geleidelijk</string>
     <string name="boost_slider_desc">Schuifregelaar voor boostniveau</string>
     <string name="start_on_boot_label">Automatisch opstarten</string>
+    <string name="boost_value_format">%.1f%%</string>
 
     <string name="app_info_title">App Info</string>
     <string name="version_label">Versie:</string>
@@ -83,6 +84,7 @@
     <string name="boost_gain_format">%1$.1f%% · %2$s</string>
     <string name="boost_ceiling_dynamic">Tot %1$s op deze uitgang — %2$s</string>
 
+    <string name="codec_label">Codec:</string>
     <string name="link_label">Verbinding:</string>
     <string name="headroom_label">Marge:</string>
     <string name="latency_label">Vertraging:</string>
@@ -105,4 +107,37 @@
     <string name="hardware_thermal_warning">Apparaat is warm — het versterkingsplafond is verlaagd om de versterker te beschermen.</string>
     <string name="hardware_spatializer_note">Ruimtelijke audio van het systeem staat aan; BoostX heeft de eigen verbreding teruggeschroefd om het middenbeeld niet uit te smeren.</string>
     <string name="hardware_multipoint_note">Er is meer dan één bluetooth-uitgang verbonden. De verwerking volgt de uitgang die daadwerkelijk afspeelt.</string>
+
+    <!-- Voorgrondservice-meldingen -->
+    <string name="service_channel_name">BoostX Audioservice</string>
+    <string name="service_channel_desc">Houdt audioversterking actief terwijl het scherm uit is</string>
+    <string name="service_boost_active">Boost %.1f%% — Actief</string>
+    <string name="service_boost_and_enhance">Boost %1$.1f%% · %2$s — Actief</string>
+    <string name="service_enhance_only">Verbetering aan · %s</string>
+    <string name="service_boost_off">Boost uit — tik om in te stellen</string>
+    <string name="service_stop">Stop</string>
+    <string name="service_running">● Draait op de achtergrond</string>
+    <string name="service_stopped">○ Service draait niet</string>
+
+    <!-- Snelle instellingen-tegel -->
+    <string name="tile_off">Uit</string>
+    <string name="tile_enhance_only">Verbeteren</string>
+
+    <!-- Samsung / Snapdragon info -->
+    <string name="dolby_active">Dolby Atmos ✓</string>
+    <string name="dolby_absent">Geen Dolby</string>
+    <string name="max_boost_label">Max: %.1f%%</string>
+    <string name="engine_label">Engine: %s</string>
+
+    <!-- Apparaatprofielen -->
+    <string name="profile_loaded">%s — profiel geladen</string>
+    <string name="profile_none">%s — geen opgeslagen profiel</string>
+    <string name="profile_saved">Profiel opgeslagen voor %s</string>
+    <string name="save_profile">Profiel opslaan</string>
+
+    <!-- Dialoogvenster batterijoptimalisatie -->
+    <string name="battery_opt_title">Batterijoptimalisatie</string>
+    <string name="battery_opt_message">Schakel batterijoptimalisatie uit zodat BoostX actief blijft wanneer het scherm uit is.</string>
+    <string name="settings_label">Instellingen</string>
+    <string name="cancel_label">Annuleren</string>
 </resources>
