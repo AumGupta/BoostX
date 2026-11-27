@@ -7,3 +7,5 @@
 local.properties
 .DS_Store
 /.idea
+app/release/
+*.apk

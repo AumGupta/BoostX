@@ -14,10 +14,11 @@ BoostX is a minimal yet powerful sound enhancement tool that allows users to boo
 
 ## Features
 
-- Loudness boost using audio processing.
-- Adjustable volume and boost sliders.
-- Boost slider has two modes, discrete (default) and continuous (gradual) control. 
-- Real-time audio insights displaying output device details.
+- Hardware- and thermal-aware loudness boost (`HardwareProfile`) with per-route safety ceilings across speaker, wired, USB, Bluetooth, LE Audio, and line/HDMI outputs.
+- Multi-stage audio engine using `DynamicsProcessing` (pre-EQ, 3-band multiband compressor, true-peak limiter) on Android 9+ (API 28+), with `LoudnessEnhancer`, `Equalizer`, `BassBoost`, and `Virtualizer` fallback.
+- Adjustable volume and boost sliders with discrete (default) and continuous (gradual) modes.
+- Sound Enhancement (Clarity & Depth), 5 presets (Balanced, Vocal, Bass, Movie, Night), Left/Right Balance, Noise Gate, Auto Loudness normalization, Call Boost, and Hold-to-Compare A/B bypass.
+- Per-device saved profiles, Quick Settings tile, optional start-on-boot, and real-time output device, codec, and headroom insights.
 
 ## Screenshots
 
@@ -37,9 +38,9 @@ For now, the latest APK can be downloaded from [Releases](https://github.com/Aum
 
 ### Tech Stack & Libraries Used
 
-- Kotlin and Jetpack Compose.
-- Android AudioManager and LoudnessEnhancer API for audio processing.
-- Material 3 Components for consistent theming.
+- Kotlin with Android XML layouts (`AppCompatActivity`) and Material Components for Android.
+- Android audio & platform APIs: `AudioManager`, `DynamicsProcessing`, `LoudnessEnhancer`, `Equalizer`, `BassBoost`, `Virtualizer`, `Visualizer`, `PowerManager` thermal status API, and `TileService`.
+- Persistent background processing via a foreground service (`AudioBoostService`).
 
 ### How to Contribute
 
