@@ -879,15 +879,31 @@ class AudioController(private val context: Context) {
             return RouteChange.LOST
         }
 
-        if (activeDevice.id == lastDeviceId) return RouteChange.NONE
+        val newRoute = HardwareProfile.routeForDeviceType(activeDevice.type)
+        val newCodecTier = hardware.codecTier(activeDevice)
+
+        if (activeDevice.id == lastDeviceId) {
+            if (newRoute == route && newCodecTier == codecTier) return RouteChange.NONE
+
+            // Same physical sink, but codec or profile changed (e.g. SBC -> LDAC in Developer
+            // Options): re-voice the EQ top-band trim and refresh UI without tearing down effects.
+            lastActiveDevice = activeDevice
+            route = newRoute
+            codecTier = newCodecTier
+            applyAll()
+            onHeadroomChanged?.invoke()
+            emitCurrentDevice()
+            return RouteChange.CHANGED
+        }
+
         lastDeviceId = activeDevice.id
         lastActiveDevice = activeDevice
 
         // Re-voice for the new output before the effects are rebuilt. The route decides the
         // entire gain budget and the codec decides the top-band trim, so both have to land
         // before applyAll().
-        route = HardwareProfile.routeForDeviceType(activeDevice.type)
-        codecTier = hardware.codecTier(activeDevice)
+        route = newRoute
+        codecTier = newCodecTier
 
         setupEffects()
         hasRestarted = false

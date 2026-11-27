@@ -3,10 +3,13 @@ package com.example.boostx
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
+import android.media.AudioFormat
 import android.media.AudioManager
 import android.os.Build
 import android.os.PowerManager
+import android.provider.Settings
 import androidx.core.content.ContextCompat
+import java.util.Locale
 
 /**
  * Everything BoostX knows about the silicon and the transducers it is driving.
@@ -170,6 +173,59 @@ class HardwareProfile(private val context: Context) {
             else -> 1f
         }
 
+        /**
+         * Resolves whether Samsung Dolby Atmos is actively post-processing audio.
+         *
+         * Only Samsung devices with `com.samsung.android.dolby` installed can engage One UI's
+         * Dolby stage. When `dolby_atmos` in [Settings.System] is explicitly `0`, Dolby is off
+         * and must not derate the gain ceiling; if the key is unreadable (`< 0`), we fall back
+         * conservatively to `true` when the package is present.
+         */
+        fun isDolbyActiveFor(
+            isSamsung: Boolean,
+            packageInstalled: Boolean,
+            dolbySetting: Int
+        ): Boolean {
+            if (!isSamsung || !packageInstalled) return false
+            return when {
+                dolbySetting == 0 -> false
+                dolbySetting > 0 -> true
+                else -> true
+            }
+        }
+
+        /** Formats a sample rate in Hz as a locale-independent kHz string (e.g. `44.1 kHz`). */
+        fun formatSampleRateKhz(sampleRateHz: Int): String {
+            val khz = sampleRateHz / 1000f
+            return if (khz % 1f == 0f) {
+                "${khz.toInt()} kHz"
+            } else {
+                String.format(Locale.US, "%.1f kHz", khz)
+            }
+        }
+
+        /** Infers the active [CodecTier] from route, top sample rate, and PCM precision. */
+        fun codecTierFor(
+            route: Route,
+            maxSampleRateHz: Int,
+            hasHiResPcm: Boolean,
+            supportsSnapdragonSound: Boolean
+        ): CodecTier {
+            if (route == Route.BLUETOOTH_LE) return CodecTier.LE_LC3
+
+            if (route == Route.BLUETOOTH) {
+                return when {
+                    maxSampleRateHz >= 88200 -> CodecTier.LDAC_HIRES
+                    hasHiResPcm && supportsSnapdragonSound -> CodecTier.APTX_ADAPTIVE
+                    hasHiResPcm -> CodecTier.LDAC
+                    maxSampleRateHz > 0 -> CodecTier.A2DP_STANDARD
+                    else -> CodecTier.UNKNOWN
+                }
+            }
+
+            return if (hasHiResPcm) CodecTier.HIRES_PCM else CodecTier.UNKNOWN
+        }
+
         /** Maps a framework [AudioDeviceInfo] type onto the route whose ceiling applies. */
         fun routeForDeviceType(type: Int): Route = when (type) {
             AudioDeviceInfo.TYPE_BUILTIN_SPEAKER,
@@ -257,7 +313,7 @@ class HardwareProfile(private val context: Context) {
     /** DynamicsProcessing — the multiband compressor and the true-peak limiter live here. */
     val hasAdvancedEngine: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
 
-    val isDolbyPresent: Boolean by lazy {
+    private val isDolbyPackageInstalled: Boolean by lazy {
         isSamsung && try {
             context.packageManager.getPackageInfo("com.samsung.android.dolby", 0)
             true
@@ -265,6 +321,26 @@ class HardwareProfile(private val context: Context) {
             false
         }
     }
+
+    /**
+     * Live check for whether Samsung's Dolby Atmos stage is active. Re-queried on access
+     * (rather than cached for the lifetime of the service) so toggling Dolby in Quick
+     * Settings takes effect without restarting BoostX.
+     */
+    val isDolbyPresent: Boolean
+        get() {
+            if (!isDolbyPackageInstalled) return false
+            val setting = try {
+                Settings.System.getInt(context.contentResolver, "dolby_atmos", -1)
+            } catch (_: Exception) {
+                -1
+            }
+            return isDolbyActiveFor(
+                isSamsung = isSamsung,
+                packageInstalled = true,
+                dolbySetting = setting
+            )
+        }
 
     // ── Audio HAL capabilities ────────────────────────────────────────────────
 
@@ -406,6 +482,33 @@ class HardwareProfile(private val context: Context) {
      * link (LDAC at 96 kHz, USB DAC at 384 kHz, …), not what the mixer happens to run at.
      */
     fun linkCapability(device: AudioDeviceInfo): String {
+        val (rates, channels) = collectRatesAndChannels(device)
+        val topRate = rates.maxOrNull() ?: return ""
+        val rateText = formatSampleRateKhz(topRate)
+        return if (channels > 0) "$rateText · ${channels}ch" else rateText
+    }
+
+    /**
+     * Best-effort read of what the link is carrying.
+     *
+     * The negotiated A2DP codec is not public API, so this leans on what [AudioDeviceInfo]
+     * exposes: LDAC is the only A2DP codec that runs above 48 kHz, and >16-bit PCM profiles
+     * indicate a higher-precision link (aptX Adaptive / LDAC). AAC and SBC both sit at
+     * 16-bit 44.1/48 kHz and are reported together as [CodecTier.A2DP_STANDARD].
+     */
+    fun codecTier(device: AudioDeviceInfo): CodecTier {
+        val route = routeForDeviceType(device.type)
+        val (rates, _) = collectRatesAndChannels(device)
+        val topRate = rates.maxOrNull() ?: 0
+        return codecTierFor(
+            route = route,
+            maxSampleRateHz = topRate,
+            hasHiResPcm = hasHiResPcmFormat(device),
+            supportsSnapdragonSound = supportsSnapdragonSound
+        )
+    }
+
+    private fun collectRatesAndChannels(device: AudioDeviceInfo): Pair<Set<Int>, Int> {
         val rates = mutableSetOf<Int>()
         var channels = 0
 
@@ -422,56 +525,25 @@ class HardwareProfile(private val context: Context) {
         }
         if (rates.isEmpty()) device.sampleRates.forEach { rates.add(it) }
         if (channels == 0) channels = device.channelCounts.maxOrNull() ?: 0
-
-        val topRate = rates.maxOrNull() ?: return ""
-        val khz = topRate / 1000f
-        val rateText = if (khz % 1f == 0f) "${khz.toInt()} kHz" else String.format("%.1f kHz", khz)
-        return if (channels > 0) "$rateText · ${channels}ch" else rateText
+        return rates to channels
     }
 
-    /**
-     * Best-effort read of what the link is carrying.
-     *
-     * The negotiated A2DP codec is not public API, so this leans on the one thing that *is*
-     * observable: LDAC is the only A2DP codec that runs above 48 kHz, so a link advertising
-     * 88.2/96 kHz is LDAC. AAC and SBC both sit at 44.1/48 kHz and are indistinguishable
-     * from here — reported together rather than guessed at.
-     */
-    fun codecTier(device: AudioDeviceInfo): CodecTier {
-        val route = routeForDeviceType(device.type)
-        if (route == Route.BLUETOOTH_LE) return CodecTier.LE_LC3
-
-        val topRate = maxSampleRate(device)
-        val hasFloat = device.encodings.contains(android.media.AudioFormat.ENCODING_PCM_FLOAT)
-
-        if (route == Route.BLUETOOTH) {
-            return when {
-                topRate >= 88200 -> CodecTier.LDAC_HIRES
-                hasFloat && supportsSnapdragonSound -> CodecTier.APTX_ADAPTIVE
-                hasFloat -> CodecTier.LDAC
-                topRate > 0 -> CodecTier.A2DP_STANDARD
-                else -> CodecTier.UNKNOWN
-            }
-        }
-
-        return when {
-            hasFloat -> CodecTier.HIRES_PCM
-            else -> CodecTier.UNKNOWN
-        }
-    }
-
-    private fun maxSampleRate(device: AudioDeviceInfo): Int {
-        var top = 0
+    private fun hasHiResPcmFormat(device: AudioDeviceInfo): Boolean {
+        if (device.encodings.any { isHiResPcmEncoding(it) }) return true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             try {
-                for (profile in device.audioProfiles) {
-                    profile.sampleRates.forEach { if (it > top) top = it }
-                }
+                if (device.audioProfiles.any { isHiResPcmEncoding(it.format) }) return true
             } catch (_: Exception) {
             }
         }
-        if (top == 0) device.sampleRates.forEach { if (it > top) top = it }
-        return top
+        return false
+    }
+
+    private fun isHiResPcmEncoding(encoding: Int): Boolean {
+        if (encoding == AudioFormat.ENCODING_PCM_FLOAT) return true
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            (encoding == AudioFormat.ENCODING_PCM_24BIT_PACKED ||
+                encoding == AudioFormat.ENCODING_PCM_32BIT)
     }
 
     /**
